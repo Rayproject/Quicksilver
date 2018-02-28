@@ -6,7 +6,7 @@
 #include "SimpleEstimator.h"
 
 SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
-    int length = graph.getNoLabels();
+    uint32_t length = graph.getNoLabels();
     uint32_t labelCount[length];
     uint32_t sol = 0;
     // works only with SimpleGraph
@@ -15,20 +15,20 @@ SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
 
 void SimpleEstimator::prepare() {
 
-    for(int i = 0; i < length; i ++) {
+    for(uint32_t i = 0; i < length; i ++) {
         labelCount[i] = 0;
     }
 
     for(i = 0; i < length; i ++) {
         for(std::pair p: graph.adj[i]) {
             labelCount[p.first] ++;
-        }
+        };
     }
 
     for(i = 0; i < length; i ++) {
-        sol += labelCount[i];
+        sol = sol + labelCount[i];
     }
-    sol /= length;
+    sol = sol / length;
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
