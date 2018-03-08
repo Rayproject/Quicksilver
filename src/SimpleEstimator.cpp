@@ -7,8 +7,6 @@
 
 uint32_t numLabels;
 uint32_t numVertices;
-//uint32_t** twoPaths;
-//uint32_t** forksSplits;
 cardStat* labelData;
 uint32_t** inPaths;
 uint32_t** outPaths;
@@ -26,48 +24,6 @@ SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
 void SimpleEstimator::prepare() {
     numLabels = graph.get()->getNoLabels();
     numVertices = graph.get()->getNoVertices();
-//    twoPaths = new uint32_t*[numLabels];
-//    forksSplits = new uint32_t*[numLabels];
-//
-//    auto * dups = new uint32_t[numLabels];
-//
-//    for(auto i = 0; i < numLabels; i ++) {
-//        twoPaths[i] = new uint32_t[numLabels];
-//        forksSplits[i] = new uint32_t[numLabels];
-//        for(auto j = 0; j < numLabels; j ++) {
-//            twoPaths[i][j] = 0;
-//            forksSplits[i][j] = 0;
-//        }
-//    }
-//
-//    for(auto i = 0; i < numVertices; i ++) {
-//        for(auto p1: graph.get()->adj[i]) {
-//            for(auto j = 0; j < numLabels; j ++) {
-//                dups[j] = 0;
-//            }
-//            for(auto p2: graph.get()->adj[p1.second]) {
-//                dups[p2.first] ++;
-//                if(dups[p2.first] > 1) {
-//                    forksSplits[p1.first][p2.first] ++;
-//                }
-//                twoPaths[p1.first][p2.first] ++;
-//            }
-//        }
-//    }
-//
-//    for(auto i = 0; i < numLabels; i ++) {
-//        for(auto p1: graph.get()->reverse_adj[i]) {
-//            for(auto j = 0; j < numLabels; j ++) {
-//                dups[j] = 0;
-//            }
-//            for(auto p2: graph.get()->reverse_adj[p1.second]) {
-//                dups[p2.first] ++;
-//                if(dups[p2.first] > 1) {
-//                    forksSplits[p2.first][p1.first] --;
-//                }
-//            }
-//        }
-//    }
 
     inPaths = new uint32_t*[numLabels];
     outPaths = new uint32_t*[numLabels];
@@ -156,7 +112,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             uint32_t in = left.noIn;
             uint32_t out = right.noOut;
             auto paths = std::min(left.noPaths * right.noPaths /(right.noIn/4),left.noPaths * right.noPaths /(left.noOut/4));
-            cardStat processed = cardStat{std::min(in,paths),std::min(out, paths),paths};
+            cardStat processed = cardStat{in,out,paths};
             left = processed;
         }
         queryVector.clear();
