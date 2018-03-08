@@ -94,7 +94,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         cardStat onlyOne=labelData[queryVector[0].first];
         queryVector.clear();
         //if(queryVector[0].second == '+')
-            return onlyOne;
+            return reverse(onlyOne);
         //else return reverse(onlyOne);
     }
     else
@@ -102,14 +102,14 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
         cardStat left;
         //if(queryVector[0].second == '+')
-            left = labelData[queryVector[0].first];
+            left = reverse(labelData[queryVector[0].first]);
         //else left = reverse(labelData[queryVector[0].first]);
 
         for(int i=1; i<queryVector.size();i++)
         {
             cardStat right;
             //if(queryVector[i].second == '+')
-                right = labelData[queryVector[i].first];
+                right = reverse(labelData[queryVector[i].first]);
             //else right = reverse(labelData[queryVector[i].first]);
 
             uint32_t in = left.noIn;
