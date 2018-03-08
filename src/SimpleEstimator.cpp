@@ -12,7 +12,7 @@ uint32_t numVertices;
 cardStat* labelData;
 uint32_t** inPaths;
 uint32_t** outPaths;
-std::vector<uint32_t> queryVector;
+std::vector<std::pair<uint32_t, char>> queryVector;
 
 
 SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
@@ -110,12 +110,11 @@ void treeToList(RPQTree* q) {
         treeToList(q->right);
     }
     else if(q->isLeaf()) {
-        auto label = q->data.at(0);
-        uint32_t labelInt = label - '0';
-        if(q->data.at(1) == '+') {
-            queryVector.push_back(labelInt);
-        }
-        else queryVector.push_back(-labelInt);
+        auto label = q->data.substr(0, q->data.size() - 1);
+        std::stringstream geek(label);
+        uint32_t labelInt;
+        geek >> labelInt;
+        queryVector.push_back(std::make_pair(labelInt, q->data.at(q->data.size() - 1)));
     }
 }
 
@@ -124,16 +123,7 @@ cardStat reverse(cardStat c) {
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
-    // treeToList takes tree q and adds all of the nodes in the global variable queryVector. Basically you now have
-    // the query as a vector. You can access
-    // the first value in the query with queryVector[0], the next with queryVector[1] etc.
     treeToList(q);
-
-
-    // All of the cardStat objects that you wanted for every label are in labelData. If you want to access the cardStat
-    // for label i then use labelData[i]. MAKE SURE to check if labels in queryVector are negative (it means that
-    // you need the reversed edges of the label). If value j is negative, then you can access its cardStat with
-    // reverse(labelData[-i]). Ask me on Skype if you have any questions.
 
     if(queryVector.size()==0)
     {
@@ -142,20 +132,31 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     }
     else if(queryVector.size()==1)
     {
-        cardStat onlyOne=labelData[queryVector[0]];
+        cardStat onlyOne=labelData[queryVector[0].first];
         queryVector.clear();
-        return onlyOne;
+        if(queryVector[0].second == '+')
+            return onlyOne;
+        else return reverse(onlyOne);
     }
     else
     {
-        cardStat left = labelData[queryVector[0]];
+
+        cardStat left;
+        if(queryVector[0].second == '+')
+            left = labelData[queryVector[0].first];
+        else left = reverse(labelData[queryVector[0].first]);
+
         for(int i=1; i<queryVector.size();i++)
         {
-            cardStat right = labelData[queryVector[i]];
+            cardStat right;
+            if(queryVector[i].second == '+')
+                right = labelData[queryVector[i].first];
+            else right = reverse(labelData[queryVector[i].first]);
+
             uint32_t in = left.noIn;
             uint32_t out = right.noOut;
             auto paths = std::min(left.noPaths * right.noPaths /(right.noIn/4),left.noPaths * right.noPaths /(left.noOut/4));
-            cardStat processed = cardStat{in,out,paths};
+            cardStat processed = cardStat{std::min(in,paths),std::min(out, paths),paths};
             left = processed;
         }
         queryVector.clear();
