@@ -57,6 +57,9 @@ void SimpleEstimator::prepare() {
 
         }
         labelData[i] = {numOut, numPaths, numIn};
+        numPaths = 0;
+        numIn = 0;
+        numOut = 0;
     }
 }
 
