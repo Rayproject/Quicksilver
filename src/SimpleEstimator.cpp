@@ -129,16 +129,36 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     // the first value in the query with queryVector[0], the next with queryVector[1] etc.
     treeToList(q);
 
+
     // All of the cardStat objects that you wanted for every label are in labelData. If you want to access the cardStat
     // for label i then use labelData[i]. MAKE SURE to check if labels in queryVector are negative (it means that
     // you need the reversed edges of the label). If value j is negative, then you can access its cardStat with
     // reverse(labelData[-i]). Ask me on Skype if you have any questions.
 
-
-
-
-    //your code here
-
-    queryVector.clear();
-    return cardStat {0, 0, 0};
+    if(queryVector.size()==0)
+    {
+        queryVector.clear();
+        return cardStat{0,0,0};
+    }
+    else if(queryVector.size()==1)
+    {
+        cardStat onlyOne=labelData[queryVector[0]];
+        queryVector.clear();
+        return onlyOne;
+    }
+    else
+    {
+        cardStat left = labelData[queryVector[0]];
+        for(int i=1; i<queryVector.size();i++)
+        {
+            cardStat right = labelData[queryVector[i]];
+            uint32_t in = left.noIn;
+            uint32_t out = right.noOut;
+            auto paths = std::min(left.noPaths * right.noPaths /right.noIn,left.noPaths * right.noPaths /left.noOut);
+            cardStat processed = cardStat{in,out,paths};
+            left = processed;
+        }
+        queryVector.clear();
+        return left;
+    }
 }
