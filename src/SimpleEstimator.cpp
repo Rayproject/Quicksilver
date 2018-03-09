@@ -82,20 +82,22 @@ cardStat reverse(cardStat c) {
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
-    treeToList(q);
+   treeToList(q);
+    cardStat returncard;
 
     if(queryVector.size()==0)
     {
         queryVector.clear();
-        return cardStat{0,0,0};
+        returncard = cardStat{0,0,0};
+
     }
     else if(queryVector.size()==1)
     {
         cardStat onlyOne=labelData[queryVector[0].first];
         queryVector.clear();
         if(queryVector[0].second == '+')
-            return onlyOne;
-        else return reverse(onlyOne);
+            returncard = onlyOne;
+        else returncard=reverse(onlyOne);
     }
     else
     {
@@ -118,7 +120,27 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             cardStat processed = cardStat{std::min(out, paths), paths, std::min(in, paths)};
             left = processed;
         }
+
+        cardStat right;
+        if(queryVector[queryVector.size()-1].second == '+')
+            left = labelData[queryVector[queryVector.size()-1].first];
+        else left = reverse(labelData[queryVector[queryVector.size()-1].first]);
+
+        for(int i=queryVector.size()-2; i<0;i--)
+        {
+            cardStat left;
+            if(queryVector[i].second == '+')
+                left = labelData[queryVector[i].first];
+            else left = reverse(labelData[queryVector[i].first]);
+
+            uint32_t in = left.noIn;
+            uint32_t out = right.noOut;
+            auto paths = std::min(left.noPaths * right.noPaths/right.noIn,left.noPaths * right.noPaths /left.noOut);
+            cardStat processed = cardStat{std::min(out, paths), paths, std::min(in, paths)};
+            right = processed;
+        }
         queryVector.clear();
-        return left;
+        returncard = cardStat{std::min(left.noOut, right.noOut), std::min(left.noPaths,right.noPaths), std::min(left.noIn,right.noIn)};
     }
+    return returncard;
 }
