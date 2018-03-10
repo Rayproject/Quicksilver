@@ -93,28 +93,29 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     {
         cardStat onlyOne=labelData[queryVector[0].first];
         queryVector.clear();
-        //if(queryVector[0].second == '+')
+        if(queryVector[0].second == '+')
             return onlyOne;
-       // else return reverse(onlyOne);
+        else return reverse(onlyOne);
     }
     else
     {
         cardStat left;
-        //if(queryVector[0].second == '+')
+        if(queryVector[0].second == '+')
             left = labelData[queryVector[0].first];
-        //else left = reverse(labelData[queryVector[0].first]);
+        else left = reverse(labelData[queryVector[0].first]);
 
         for(int i=1; i<queryVector.size();i++)
         {
             cardStat right;
-            //if(queryVector[i].second == '+')
+            if(queryVector[i].second == '+')
                 right = labelData[queryVector[i].first];
-            //else right = reverse(labelData[queryVector[i].first]);
+            else right = reverse(labelData[queryVector[i].first]);
 
             uint32_t in = left.noIn / 4;
             uint32_t out = right.noOut / 4;
 
-            auto paths = std::min(2 * left.noPaths * right.noPaths/(left.noIn + left.noOut),2 * left.noPaths * right.noPaths /(right.noIn + right.noOut));
+            auto paths = std::min(left.noPaths * right.noPaths / (left.noIn),
+                                  left.noPaths * right.noPaths / (right.noOut));
             cardStat processed = cardStat{std::min(out, paths), paths, std::min(in, paths)};
             left = processed;
         }
