@@ -82,17 +82,16 @@ cardStat reverse(cardStat c) {
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
-       treeToList(q);
+    queryVector.clear();
+    treeToList(q);
 
     if(queryVector.size()==0)
     {
-        queryVector.clear();
         return cardStat{0,0,0};
     }
     else if(queryVector.size()==1)
     {
         cardStat onlyOne=labelData[queryVector[0].first];
-        queryVector.clear();
         if(queryVector[0].second == '+')
             return onlyOne;
         else return reverse(onlyOne);
@@ -118,7 +117,6 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             cardStat processed = cardStat{std::min(out, paths), paths, std::min(in, paths)};
             left = processed;
         }
-        queryVector.clear();
         return left;
     }
 }
