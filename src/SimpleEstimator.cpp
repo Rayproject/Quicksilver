@@ -122,8 +122,8 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             uint32_t out;
 
             if(real) {
-                in = left.noIn / 3;
-                out = right.noOut / 3;
+                in = left.noIn / 5;
+                out = right.noOut / 5;
             }
             else {
                 in = 3 * left.noIn / 4;
