@@ -121,7 +121,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         }
         cardStat firstnode = labelData[queryVector[0].first];
         uint32_t firstIn = (firstnode.noIn)/2;
-        cardStat returned = cardStat{left.noOut, left.paths, firstIn};
+        cardStat returned = cardStat{left.noOut, left.noPaths, firstIn};
         queryVector.clear();
         return returned;
     }
