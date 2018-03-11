@@ -120,6 +120,6 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             left = processed;
         }
         queryVector.clear();
-        return returned;
+        return left;
     }
 }
