@@ -114,8 +114,8 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
             uint32_t in = (left.noIn)/ 4;
             uint32_t out = (right.noOut) / 4;
         
-            auto paths = std::min(2 * left.noPaths * right.noPaths / (right.noIn + right.noOut + 30),
-                                  2 * left.noPaths * right.noPaths / (left.noOut + left.noIn + 30));
+            auto paths = std::min(2 * left.noPaths * right.noPaths / (right.noIn + right.noOut + 25),
+                                  2 * left.noPaths * right.noPaths / (left.noOut + left.noIn + 25));
             cardStat processed = cardStat{std::min(out, paths), paths, std::min(in, paths)};
             left = processed;
         }
