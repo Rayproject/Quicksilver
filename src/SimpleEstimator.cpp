@@ -105,7 +105,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         else left = reverse(labelData[queryVector[0].first]);
 
         uint32_t total = (left.noIn + left.noOut) / 2;
-        uint32_t factor = 100;
+        uint32_t factor = 1000;
         for(int i=1; i<queryVector.size();i++)
         {
             cardStat right;
