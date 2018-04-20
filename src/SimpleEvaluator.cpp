@@ -148,11 +148,11 @@ std::vector<RPQTree*> SimpleEvaluator::find_leaves(RPQTree *query) {
 
     std::vector<RPQTree*> result;
     if (query->left) {
-        auto rec = getLeaves(query->left);
+        auto rec = find_leaves(query->left);
         result.insert(result.end(), rec.begin(), rec.end());
     }
     if (query->right) {
-        auto rec = getLeaves(query->right);
+        auto rec = find_leaves(query->right);
         result.insert(result.end(), rec.begin(), rec.end());
     }
 
