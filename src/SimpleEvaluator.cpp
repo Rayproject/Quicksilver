@@ -142,48 +142,49 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 
 
 std::vector<RPQTree*> SimpleEvaluator::find_leaves(RPQTree *query) {
-     if (query->isLeaf()) {
+    std::vector<RPQTree*> final;
+    if (query->isLeaf()) {
         return {query};
     }
-
-    std::vector<RPQTree*> result;
-    if (query->left) {
-        auto rec = find_leaves(query->left);
-        result.insert(result.end(), rec.begin(), rec.end());
-    }
+    
     if (query->right) {
-        auto rec = find_leaves(query->right);
-        result.insert(result.end(), rec.begin(), rec.end());
+         auto process = find_leaves(query->right);
+         final.insert(final.end(), process.begin(), process.end());
     }
-
-    return result;
+    if (query->left)
+    {
+        auto process = find_leaves(query->left);
+        final.insert(final.end(), process.begin(), process.end());
+    }
+    return final;
 }
 
 RPQTree* SimpleEvaluator::query_optimizer(RPQTree *query) {
-    std::vector<RPQTree*> leaves = find_leaves(query);
+    std::vector<RPQTree*> ls = find_leaves(query);
 
-    while (leaves.size() > 1) {
-        uint32_t bestScore = 0;
-        RPQTree *bestTree = nullptr;
+    while (ls.size() > 1) {
+        RPQTree *best_plan = nullptr;
+        uint32_t better_result = 0;
         int index = -1;
 
-        for (int i = 0; i < leaves.size()-1; ++i) {
+        for (int i = 0; i < ls.size()-1; ++i) {
             std::string data("/");
-            auto *currentTree = new RPQTree(data, leaves[i], leaves[i+1]);
-            uint32_t currentScore = est->estimate(currentTree).noPaths;
+            auto *c_plan = new RPQTree(data, ls[i], ls[i+1]);
+            uint32_t c_result = est->estimate(c_plan).noPaths;
 
-            if (bestScore == 0 || bestScore > currentScore) {
-                bestScore = currentScore;
-                bestTree = currentTree;
+            if (better_result == 0 || better_result > c_result) {
+                better_result = c_result;
+                best_plan = c_plan;
                 index = i;
             }
         }
 
-        leaves.erase(leaves.begin() + index + 1);
-        leaves[index] = bestTree;
+        ls.erase(ls.begin() + index + 1);
+        ls[index] = best_plan;
     }
 
-    return leaves[0];
+    return ls[0];
+
 
 }
 
